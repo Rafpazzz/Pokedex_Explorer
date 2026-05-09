@@ -8,16 +8,18 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
-public class conection {
+public class Conection {
     String url = "https://pokeapi.co/api/v2/pokemon/";
 
-    public static String urlFinal(String endereco, String name) {
+    public Conection(){};
+
+    public String urlFinal(String endereco, String name) {
         String uri = (endereco + name).trim();
         return uri;
     }
 
-    public static String responseAPI(String address, Pokemon pokemon) throws IOException, InterruptedException{
-        address = urlFinal(address, pokemon.getName());
+    public String responseAPI(String name) throws IOException, InterruptedException{
+        String address = urlFinal(url, name);
         try {
             HttpClient client = HttpClient.newHttpClient();
 
