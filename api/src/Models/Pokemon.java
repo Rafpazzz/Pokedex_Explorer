@@ -10,6 +10,9 @@ public class Pokemon {
     private List<String> types;
     private PokemonStats stats;
 
+    public Pokemon(){};
+
+
     public Pokemon(String name, Integer level, Double weight, List<String> type, int pokedex_number, PokemonStats stats) {
         this.pokedex_number = pokedex_number;
         this.name = name;
