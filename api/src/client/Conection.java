@@ -11,7 +11,7 @@ import java.net.http.HttpResponse;
 public class Conection {
     String url = "https://pokeapi.co/api/v2/pokemon/";
 
-    public Conection(){};
+    public Conection(){}
 
     public String urlFinal(String endereco, String name) {
         String uri = (endereco + name).trim();

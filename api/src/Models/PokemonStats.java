@@ -17,6 +17,18 @@ public class PokemonStats {
         Speed = speed;
     }
 
+    @Override
+    public String toString() {
+        return "PokemonStats{" +
+                "hp=" + hp +
+                ", Attack=" + Attack +
+                ", SpecialAttack=" + SpecialAttack +
+                ", Defence=" + Defence +
+                ", SpecialDefence=" + SpecialDefence +
+                ", Speed=" + Speed +
+                '}';
+    }
+
     public int getHp() {
         return hp;
     }
