@@ -91,4 +91,28 @@ public class Pokemon {
     public PokemonStats getBase_stats() {
         return base_stats;
     }
+
+    public PokemonStats getLevel_stats() {
+        return level_stats;
+    }
+
+    public List<PokemonTypes> getTypes() {
+        return types;
+    }
+
+    public Double getWeight() {
+        return weight;
+    }
+
+    public Integer getLevel() {
+        return level;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public int getGame_index() {
+        return game_index;
+    }
 }
