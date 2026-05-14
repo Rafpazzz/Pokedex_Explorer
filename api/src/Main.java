@@ -8,8 +8,9 @@ public class Main {
         int id = 23;
         Service service = new Service();
         Conection conection  = new Conection();
-        Pokemon pokemon = service.findPokeById(id,conection);
+        Pokemon pokemon1 = service.findPokeById(id,conection);
+        Pokemon pokemon2 = service.findPokeByName(name, conection);
 
-        System.out.println(pokemon.toString());
+        System.out.println(service.comparePokemon(pokemon1, pokemon2));
     }
 }
