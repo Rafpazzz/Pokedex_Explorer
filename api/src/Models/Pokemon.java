@@ -4,6 +4,7 @@ import dto.PokeDetailsDTO;
 import dto.StatSlotDTO;
 
 import java.util.List;
+import java.util.Random;
 
 public class Pokemon {
     private int game_index;
@@ -11,30 +12,24 @@ public class Pokemon {
     private Integer level;
     private Double weight;
     private List<PokemonTypes> types;
-    private PokemonStats stats;
+    private PokemonStats base_stats;
+    private PokemonStats level_stats;
+    Random r = new Random();
 
     public Pokemon(){}
 
-
-    public Pokemon(int game_index, String name, Integer level, Double weight, List<PokemonTypes> types, PokemonStats stats) {
-        this.game_index = game_index;
-        this.name = name;
-        this.level = level;
-        this.weight = weight;
-        this.types = types;
-        this.stats = stats;
-    }
-
-    public  Pokemon (PokeDetailsDTO poke) {
+    public Pokemon (PokeDetailsDTO poke) {
         this.game_index = poke.id();
         this.name  = poke.name();
+        this.level = r.nextInt(1, 101);
         this.weight = poke.weight();
         this.types = poke.types().stream().map(typeDTO -> {
             PokemonTypes type = new PokemonTypes();
             type.setName(typeDTO.type().name());
             return type;
         }).toList();
-        this.stats = convertStats(poke.stats());
+        this.base_stats = convertStats(poke.stats());
+        this.level_stats = conversaoLevel(this.level, this.base_stats);
     }
 
     private PokemonStats convertStats(List<StatSlotDTO> detailsDTO) {
@@ -62,63 +57,38 @@ public class Pokemon {
         return new PokemonStats(hp, attack, specialAttack, defence, specialDefence, speed);
     }
 
+    public PokemonStats conversaoLevel(int level, PokemonStats stats) {
+        int hpLevel = ((2 * stats.getHp() * level) / 100) + level + 10;
+        int attackLevel = ((2 * stats.getAttack() * level) / 100) + 5;
+        int specialAttackLevel = ((2 * stats.getSpecialAttack() * level) / 100) + 5;
+        int defenceLevel = ((2 * stats.getDefence() * level) / 100) + 5;
+        int specialDefenceLevel = ((2 * stats.getSpecialDefence() * level) / 100) + 5;
+        int speedLevel = ((2 * stats.getSpeed() * level) / 100) + 5;
+
+        return new PokemonStats(
+                hpLevel,
+                attackLevel,
+                specialAttackLevel,
+                defenceLevel,
+                specialDefenceLevel,
+                speedLevel
+        );
+    }
+
     @Override
     public String toString() {
-        return "Pokemon{" +
-                "id=" + game_index +
+        return "Pokemon{" + '\n' +
+                " id=" + game_index + '\n' +
                 ", name='" + name + '\n' +
                 ", level=" + level + '\n' +
                 ", weight=" + weight + '\n' +
                 ", types=" + types + '\n' +
-                ", stats=" + stats + '\n'+
+                ", base_stats=" + base_stats + '\n'+
+                ", level_stats=" + level_stats + '\n' +
                 '}';
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Integer getLevel() {
-        return level;
-    }
-
-    public void setLevel(Integer level) {
-        this.level = level;
-    }
-
-    public Double getWeight() {
-        return weight;
-    }
-
-    public void setWeight(Double weight) {
-        this.weight = weight;
-    }
-
-    public int getGame_index() {
-        return game_index;
-    }
-
-    public void setGame_index(int game_index) {
-        this.game_index = game_index;
-    }
-
-    public List<PokemonTypes> getTypes() {
-        return types;
-    }
-
-    public void setTypes(List<PokemonTypes> types) {
-        this.types = types;
-    }
-
-    public PokemonStats getStats() {
-        return stats;
-    }
-
-    public void setStats(PokemonStats stats) {
-        this.stats = stats;
+    public PokemonStats getBase_stats() {
+        return base_stats;
     }
 }
