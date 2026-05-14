@@ -77,15 +77,19 @@ public class Pokemon {
 
     @Override
     public String toString() {
-        return "Pokemon{" + '\n' +
-                " id=" + game_index + '\n' +
-                ", name='" + name + '\n' +
-                ", level=" + level + '\n' +
-                ", weight=" + weight + '\n' +
-                ", types=" + types + '\n' +
-                ", base_stats=" + base_stats + '\n'+
-                ", level_stats=" + level_stats + '\n' +
-                '}';
+        return "\n==============================" + '\n' +
+                "Pokemon: " + name.toUpperCase() + '\n' +
+                "Numero da Pokedex: " + game_index + '\n' +
+                "Nivel: " + level + '\n' +
+                "Peso: " + weight + '\n' +
+                "Tipos: " + types + '\n' +
+                '\n' +
+                "Estatisticas Base:" + '\n' +
+                "  " + base_stats + '\n' +
+                '\n' +
+                "Estatisticas no Nivel " + level + ":" + '\n' +
+                "  " + level_stats + '\n' +
+                "==============================";
     }
 
     public PokemonStats getBase_stats() {

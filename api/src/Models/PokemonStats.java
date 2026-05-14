@@ -19,14 +19,12 @@ public class PokemonStats {
 
     @Override
     public String toString() {
-        return "PokemonStats{" +
-                "hp=" + hp +
-                ", Attack=" + Attack +
-                ", SpecialAttack=" + SpecialAttack +
-                ", Defence=" + Defence +
-                ", SpecialDefence=" + SpecialDefence +
-                ", Speed=" + Speed +
-                '}';
+        return "HP: " + hp + '\n' +
+                "  Ataque: " + Attack + '\n' +
+                "  Ataque Especial: " + SpecialAttack + '\n' +
+                "  Defesa: " + Defence + '\n' +
+                "  Defesa Especial: " + SpecialDefence + '\n' +
+                "  Velocidade: " + Speed;
     }
 
     public int getHp() {

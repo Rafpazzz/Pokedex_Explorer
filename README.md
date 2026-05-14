@@ -17,19 +17,24 @@ Aplicacao Java de console que consulta dados de Pokemon na [PokeAPI](https://pok
 
 ## Sobre o projeto
 
-O **Pokedex Explorer** busca informacoes de um Pokemon pelo nome usando a API publica da PokeAPI. A aplicacao recebe o JSON bruto, usa Gson para desserializar os dados em DTOs e converte esses DTOs em modelos internos mais adequados para uso pela aplicacao.
+O **Pokedex Explorer** busca informacoes de Pokemon usando a API publica da PokeAPI. A aplicacao recebe o JSON bruto, usa Gson para desserializar os dados em DTOs e converte esses DTOs em modelos internos mais adequados para uso pela aplicacao.
 
-No estado atual, o Pokemon pesquisado esta definido diretamente no codigo, no arquivo `api/src/Main.java`:
-
-```java
-String name = "charizard";
-```
-
-Ao executar o programa, os dados do Pokemon sao impressos no terminal.
+No estado atual, a aplicacao possui um menu interativo no arquivo `api/src/Main.java`, implementado com `do while` e `switch case`. Pelo menu, o usuario pode buscar Pokemon por nome ou numero da Pokedex, adicionar os resultados em uma lista de ate 6 Pokemon, listar os itens salvos e comparar dois Pokemon da lista.
 
 ## Funcionalidades
 
 - Consulta de Pokemon por nome na PokeAPI.
+- Consulta de Pokemon pelo numero da Pokedex.
+- Timeout de 10 segundos nas chamadas HTTP para evitar travamento aparente do menu.
+- Tratamento de respostas HTTP diferentes de `200 OK` como busca nao encontrada.
+- Menu interativo de console com `do while` e `switch case`.
+- Lista local com limite de 6 Pokemon.
+- Adicao do ultimo Pokemon buscado na lista.
+- Bloqueio de Pokemon duplicado na lista pelo numero da Pokedex.
+- Listagem de todos os Pokemon salvos.
+- Busca e listagem de Pokemon salvo pelo nome.
+- Busca e listagem de Pokemon salvos pelo tipo.
+- Comparacao de dois Pokemon da lista pelo nome.
 - Conversao da resposta JSON para DTOs com Gson.
 - Criacao de um modelo `Pokemon` a partir dos dados recebidos.
 - Extracao de tipos do Pokemon.
@@ -112,22 +117,38 @@ Se o JAR estiver em outro local, substitua o caminho do Gson nos comandos acima.
 
 ## Fluxo da aplicacao
 
-1. `Main` define o nome do Pokemon e instancia `Service` e `Conection`.
-2. `Service.findPokeByName` chama `Conection.responseAPI`.
-3. `Conection` monta a URL final da PokeAPI e executa uma requisicao HTTP GET.
-4. `Service` desserializa o JSON para `PokeDetailsDTO` usando Gson.
-5. `Pokemon` recebe o DTO, extrai os dados relevantes e calcula as estatisticas por nivel.
-6. `Main` imprime o resultado no console.
+1. `Main` instancia `Scanner`, `Service`, `Conection` e uma lista local de Pokemon.
+2. O menu e exibido em um `do while` ate o usuario escolher a opcao `0 - Sair`.
+3. O `switch case` direciona a opcao escolhida para busca, adicao, listagem ou comparacao.
+4. Nas buscas, `Service.findPokeByName` ou `Service.findPokeById` chama `Conection.responseAPI`.
+5. `Conection` monta a URL final da PokeAPI e executa uma requisicao HTTP GET com timeout de 10 segundos.
+6. Se a API retornar um status diferente de `200 OK`, a resposta e tratada como vazia.
+7. `Service` valida a resposta e desserializa o JSON para `PokeDetailsDTO` usando Gson.
+8. `Pokemon` recebe o DTO, extrai os dados relevantes e calcula as estatisticas por nivel.
+9. `Main` exibe o resultado no console ou adiciona o ultimo Pokemon buscado na lista.
 
 ## Arquitetura
 
 ### `Main`
 
-Ponto de entrada da aplicacao. Hoje ele define o Pokemon pesquisado diretamente no codigo e exibe o resultado retornado pelo servico.
+Ponto de entrada da aplicacao. Ele controla o menu interativo, guarda a lista local de ate 6 Pokemon e chama os servicos para buscar e comparar Pokemon.
+
+Opcoes disponiveis no menu:
+
+```text
+1 - Buscar pokemon pelo nome
+2 - Buscar pokemon pelo numero da pokedex
+3 - Adicionar ultimo pokemon buscado na lista de 6 pokemons
+4 - Listar todos os pokemons da lista
+5 - Listar pokemon da lista pelo nome
+6 - Listar pokemons da lista pelo tipo
+7 - Comparar dois pokemons da lista pelo nome
+0 - Sair
+```
 
 ### `client.Conection`
 
-Responsavel por montar a URL da PokeAPI e fazer a chamada HTTP. A URL base usada e:
+Responsavel por montar a URL da PokeAPI e fazer a chamada HTTP. A chamada possui timeout de 10 segundos e retorna resposta vazia quando a API responde com status diferente de `200 OK`. A URL base usada e:
 
 ```text
 https://pokeapi.co/api/v2/pokemon/
@@ -142,6 +163,10 @@ Camada intermediaria entre a entrada da aplicacao, o cliente HTTP e os modelos. 
 - solicita o JSON ao cliente HTTP;
 - converte o JSON para `PokeDetailsDTO`;
 - cria uma instancia de `Pokemon`;
+- busca Pokemon por nome;
+- busca Pokemon por numero da Pokedex;
+- compara dois Pokemon usando a media das estatisticas ajustadas pelo nivel;
+- valida resposta vazia ou invalida antes de criar o modelo;
 - trata excecoes de entrada/saida e interrupcao.
 
 ### `Models.Pokemon`
@@ -189,25 +214,49 @@ Os DTOs refletem apenas os campos da resposta da PokeAPI que a aplicacao usa.
 Como o nivel e aleatorio, os valores de `level_stats` podem mudar a cada execucao.
 
 ```text
-Pokemon{
- id=6
-, name='charizard
-, level=42
-, weight=905.0
-, types=[fire, flying]
-, base_stats=PokemonStats{hp=78, Attack=84, SpecialAttack=109, Defence=78, SpecialDefence=85, Speed=100}
-, level_stats=PokemonStats{hp=117, Attack=75, SpecialAttack=96, Defence=70, SpecialDefence=76, Speed=89}
-}
+===== Pokedex Explorer =====
+1 - Buscar pokemon pelo nome
+2 - Buscar pokemon pelo numero da pokedex
+3 - Adicionar ultimo pokemon buscado na lista de 6 pokemons
+4 - Listar todos os pokemons da lista
+5 - Listar pokemon da lista pelo nome
+6 - Listar pokemons da lista pelo tipo
+7 - Comparar dois pokemons da lista pelo nome
+0 - Sair
+Escolha uma opcao: 1
+Digite o nome do pokemon: charizard
+Pokemon encontrado:
+
+==============================
+Pokemon: CHARIZARD
+Numero da Pokedex: 6
+Nivel: 42
+Peso: 905.0
+Tipos: [fire, flying]
+
+Estatisticas Base:
+  HP: 78
+  Ataque: 84
+  Ataque Especial: 109
+  Defesa: 78
+  Defesa Especial: 85
+  Velocidade: 100
+
+Estatisticas no Nivel 42:
+  HP: 117
+  Ataque: 75
+  Ataque Especial: 96
+  Defesa: 70
+  Defesa Especial: 76
+  Velocidade: 89
+==============================
 ```
 
 ## Boas praticas e melhorias futuras
 
-- Receber o nome do Pokemon por argumento de linha de comando ou entrada do usuario.
 - Renomear `Conection` para `Connection` ou `PokeApiClient`.
 - Padronizar nomes de pacotes em minusculo, por exemplo `models` em vez de `Models`.
 - Evitar retornar `null` em caso de erro; considerar `Optional<Pokemon>` ou excecoes de dominio.
-- Tratar respostas HTTP diferentes de `200 OK`.
-- Validar nomes vazios ou invalidos antes da chamada HTTP.
 - Criar testes unitarios para conversao de estatisticas e mapeamento de DTOs.
 - Usar Maven ou Gradle para gerenciar dependencias e padronizar build.
 - Remover do versionamento arquivos gerados, como `out/production`, se o objetivo for manter apenas codigo-fonte.

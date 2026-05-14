@@ -49,8 +49,16 @@ public class Service {
 
     public Pokemon findPokeByName (String name, Conection conection) {
         try {
-            String json = conection.responseAPI(name);
+            String json = conection.responseAPI(name.trim());
+            if (json.isBlank()) {
+                throw new NameInvalidException();
+            }
+
             PokeDetailsDTO dto = gson.fromJson(json, PokeDetailsDTO.class);
+            if (dto == null || dto.id() == null) {
+                throw new NameInvalidException();
+            }
+
             Pokemon poke = new Pokemon(dto);
 
             return poke;
@@ -76,6 +84,10 @@ public class Service {
             }
 
             String json = conection.responseAPI(String.valueOf(id));
+            if (json.isBlank()) {
+                throw new IdInvalidException();
+            }
+
             PokeDetailsDTO dto = gson.fromJson(json, PokeDetailsDTO.class);
 
             if (dto == null || dto.id() == null) {
